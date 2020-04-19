@@ -9,6 +9,7 @@ final String columnId = '_id';
 final String columnName = 'name';
 final String columnUrl = 'url';
 final String columnType = 'type';
+final String columnInfo = 'info';
 
 // data model class
 class Ind {
@@ -16,6 +17,7 @@ class Ind {
   String name;
   String url;
   String type;
+  String info;
 
   Ind();
 
@@ -25,6 +27,7 @@ class Ind {
     name = map[columnName];
     url = map[columnUrl];
     type = map[columnType];
+    info = map[columnInfo];
   }
 
   // convenience method to create a Map from this Word object
@@ -33,6 +36,7 @@ class Ind {
       columnName: name,
       columnUrl: url,
       columnType: type,
+      columnInfo: info,
     };
     if (id != null) {
       map[columnId] = id;
@@ -76,17 +80,18 @@ class DatabaseHelper {
               CREATE TABLE $tableInd (
                 $columnId INTEGER PRIMARY KEY,
                 $columnName TEXT NOT NULL,
-                $columnUrl TEXT NOT NULL,
-                $columnType TEXT NOT NULL
+                $columnUrl TEXT,
+                $columnType TEXT,
+                $columnInfo TEXT
               )
               ''');
   }
 
   // Database helper methods:
 
-  Future<int> insert(Ind name) async {
+  Future<int> insert(Ind item) async {
     Database db = await database;
-    int id = await db.insert(tableInd, name.toMap());
+    int id = await db.insert(tableInd, item.toMap());
     return id;
   }
 

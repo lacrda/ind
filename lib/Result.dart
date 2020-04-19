@@ -21,11 +21,12 @@ class Result extends StatefulWidget {
 class _ResultState extends State<Result> {
   Ind model2 = Ind();
 
-  _save({String name, String url, String type}) async {
+  _save({String name, String url, String type, String info}) async {
     Ind ind = Ind();
     ind.name = name;
     ind.url = url;
     ind.type = type;
+    ind.info = info;
     DatabaseHelper helper = DatabaseHelper.instance;
     int id = await helper.insert(ind);
 //    print('inserted row: $id - $name - $url - $type');
@@ -68,7 +69,10 @@ class _ResultState extends State<Result> {
                     child: Column(
                   children: <Widget>[
                     SizedBox(
-                      height: 25.0,
+                      height: 12.0,
+                    ),
+                    SizedBox(
+                      height: 12.0,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -110,6 +114,7 @@ class _ResultState extends State<Result> {
                                           _save(
                                               name: snapshot.data[0],
                                               url: url,
+                                              info: snapshot.data[2],
                                               type: snapshot.data[1]);
                                           Navigator.popUntil(context,
                                               ModalRoute.withName('/'));

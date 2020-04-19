@@ -131,9 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showDialog(Ind data) async {
+  void _showDialog(Ind data) {
     // flutter defined function
-    List info = await getInfo(data.url);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -141,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return AlertDialog(
           backgroundColor: Colors.blueGrey.shade500,
           title: new Text(
-            "${info[0]}\n${info[2]}",
+            "${data.name}\n${data.info}",
             style: TextStyle(color: Colors.white),
           ),
           content: Column(
@@ -217,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               subtitle: Text(
-                                snapshot.data[index].name,
+                                snapshot.data[index].info,
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.teal.shade900,
@@ -248,9 +247,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 });
           } else {
-            return Center(
-              child: Text(
-                  "Adicione músicas, artistas ou álbuns inserindo o link delas no Spotify."),
+            return SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Text(
+                    "Clique no botão abaixo para adicionar músicas, artistas ou álbuns na sua lista.",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ),
+              ),
             );
           }
         },
@@ -266,11 +274,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return results.name;
   }
 
-  _save({String name, String url, String type}) async {
+  _save({String name, String url, String type, String info}) async {
     Ind ind = Ind();
     ind.name = name;
     ind.url = url;
     ind.type = type;
+    ind.info = info;
     DatabaseHelper helper = DatabaseHelper.instance;
     int id = await helper.insert(ind);
 //    print('inserted row: $id - $name - $url');
@@ -288,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ind.name = 'Walk';
     ind.type = 'song';
     ind.url = 'spotify.com/Foo-Fighters';
+    ind.info = 'FF';
     DatabaseHelper helper = DatabaseHelper.instance;
     int id = await helper.insert(ind);
 //    print('inserted row: $id');
@@ -312,11 +322,12 @@ class MyCustomForm extends StatefulWidget {
 // Define a corresponding State class.
 // This class holds data related to the form.
 class MyCustomFormState extends State<MyCustomForm> {
-  _save({String name, String url, String type}) async {
+  _save({String name, String url, String type, String info}) async {
     Ind ind = Ind();
     ind.name = name;
     ind.url = url;
     ind.type = type;
+    ind.info = info;
     DatabaseHelper helper = DatabaseHelper.instance;
     int id = await helper.insert(ind);
 //    print('inserted row: $id - $name - $url - $type');
@@ -341,51 +352,51 @@ class MyCustomFormState extends State<MyCustomForm> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
                       margin: EdgeInsets.symmetric(
-                        vertical: 10.0,
+                        vertical: 4.0,
                       ),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Url',
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Insira o link do Spotify',
+                          ),
+                          onSaved: (String value) {
+                            model.url = value;
+                          },
                         ),
-                        onSaved: (String value) {
-                          model.url = value;
-                        },
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: RaisedButton(
-                  elevation: 3.0,
-                  color: Colors.teal,
-                  onPressed: () {
-                    // Validate returns true if the form is valid, or false
-                    // otherwise.
-                    if (_formKey.currentState.validate()) {
-                      _formKey.currentState.save();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Result(model: this.model)));
+              RaisedButton(
+                elevation: 3.0,
+                color: Colors.teal,
+                onPressed: () {
+                  // Validate returns true if the form is valid, or false
+                  // otherwise.
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Result(model: this.model)));
 //
 //
 //
 //                      (name: model.name, url: model.url, type: model.type);
-                    }
-                  },
-                  child: Text(
-                    'Salvar',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  }
+                },
+                child: Text(
+                  'Salvar',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -406,7 +417,8 @@ class AddPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          MyCustomForm(),
+          SizedBox(),
+          git MyCustomForm(),
         ],
       ),
     );
