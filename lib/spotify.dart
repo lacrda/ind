@@ -11,24 +11,20 @@ Future<List> getSpotifyApi(String id) async {
   var spotify = SpotifyApi(credentials);
 
   try {
-    var track = await spotify.tracks.list([id]);
-    List a = [track.first.name, track.first.artists.first.name];
+    var tracks = await spotify.tracks.list([id]);
+    Track track = tracks.first;
+    List a = [track.name, track.type, track.artists.first.name];
     return a;
-//    track.forEach((x) {
-//      print(x.name);
-//      x.artists.forEach((y) {
-//        print(y.name);
-//      });
-//    });
   } catch (e) {
     try {
       var artists = await spotify.artists.list([id]);
-      return [artists.first.name, "Artista"];
+      Artist artist = artists.first;
+      return [artist.name, artist.type, artist.genres.first];
 //      artists.forEach((x) => print(x.name));
     } catch (e) {
       try {
-        var album = await spotify.albums.get(id);
-        return [album.name, album.artists.first.name];
+        Album album = await spotify.albums.get(id);
+        return [album.name, album.type, album.artists.first.name];
       } catch (e) {
         print('error');
       }

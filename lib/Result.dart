@@ -79,7 +79,7 @@ class _ResultState extends State<Result> {
                                   height: 10.0,
                                 ),
                                 Text(
-                                  snapshot.data[1],
+                                  snapshot.data[2],
                                   style: TextStyle(
                                     fontSize: 16.0,
                                     color: Colors.teal,

@@ -33,6 +33,15 @@ class _MyHomePageState extends State<MyHomePage> {
     initPlatformState();
   }
 
+  getInfo(String url) async {
+    List ids = url.split("?");
+    List ids2 = ids[0].split("/");
+    String id = ids2.last;
+    List b = await getSpotifyApi(id);
+//    setModel(name: b[0].toString(), type: b[1].toString());
+    return b;
+  }
+
   bool isSpotifyInstalled;
 
   _launchIntent(String url) async {
@@ -75,12 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getIcon(String type) {
-    if (type == "song") {
+    if (type == "track") {
       return Icon(Icons.queue_music);
-    } else if (type == "movie") {
-      return Icon(Icons.local_movies);
-    } else if (type == "book") {
-      return Icon(Icons.book);
+    } else if (type == "album") {
+      return Icon(Icons.album);
+    } else if (type == "artist") {
+      return Icon(Icons.person);
     } else {
       return Icon(Icons.bookmark_border);
     }
@@ -89,6 +98,76 @@ class _MyHomePageState extends State<MyHomePage> {
   int length(data) {
     List a = data;
     return a.length;
+  }
+
+  void _showDeleteDialog(int id) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Deletar item"),
+          content: new Text("Tem certeza que deseja deletar esse item?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Sim, tenho certeza"),
+              onPressed: () {
+                _delete(id);
+                setState(() {});
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog(Ind data) async {
+    // flutter defined function
+    List info = await getInfo(data.url);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: Colors.teal[600],
+          title: new Text(
+            "${info[0]} - ${info[2]}",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new Text(
+                data.url,
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text(
+                "Fechar",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -130,8 +209,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             new ListTile(
                               dense: true,
                               leading: getIcon(snapshot.data[index].type),
-                              title: Text(snapshot.data[index].name),
-                              subtitle: Text(snapshot.data[index].url),
+                              title: Text(
+                                snapshot.data[index].name,
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  color: Colors.teal.shade900,
+                                ),
+                              ),
                               onTap: () {
                                 List a = snapshot.data[index].url.split("?");
                                 List b = a.first.split("/");
@@ -140,11 +224,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 _launchIntent(snapshot.data[index].url);
                               },
                               onLongPress: () {
-                                print('long');
+                                _showDialog(snapshot.data[index]);
                               },
                               trailing: IconButton(
-                                icon: Icon(Icons.play_circle_outline),
-                                onPressed: null,
+                                icon: Icon(Icons.close),
+                                onPressed: () {
+                                  _showDeleteDialog(snapshot.data[index].id);
+                                  setState(() {});
+                                },
                               ),
                             ),
                           ],
@@ -180,6 +267,13 @@ class _MyHomePageState extends State<MyHomePage> {
     DatabaseHelper helper = DatabaseHelper.instance;
     int id = await helper.insert(ind);
 //    print('inserted row: $id - $name - $url');
+  }
+
+  _delete(int id) async {
+    Ind ind = Ind();
+    ind.id = id;
+    DatabaseHelper helper = DatabaseHelper.instance;
+    await helper.delete(id);
   }
 
   _saveAndUpdate() async {
@@ -275,7 +369,10 @@ class MyCustomFormState extends State<MyCustomForm> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Result(model: this.model)));
-//                      _save(name: model.name, url: model.url, type: model.type);
+//
+//
+//
+//                      (name: model.name, url: model.url, type: model.type);
                     }
                   },
                   child: Text(
