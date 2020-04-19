@@ -7,6 +7,7 @@ import 'package:ind/spotify.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter_package_manager/flutter_package_manager.dart';
 import 'package:ind/Result.dart';
+import 'package:spotify/spotify.dart';
 
 class Result extends StatefulWidget {
   final Ind model;
@@ -41,9 +42,13 @@ class _ResultState extends State<Result> {
     List ids = url.split("?");
     List ids2 = ids[0].split("/");
     String id = ids2.last;
-    List b = await getSpotifyApi(id);
+    try {
+      List b = await getSpotifyApi(id);
+      return b;
+    } catch (e) {
+      return e;
+    }
 //    setModel(name: b[0].toString(), type: b[1].toString());
-    return b;
   }
 
   buildContainer2(String url) {
@@ -52,7 +57,13 @@ class _ResultState extends State<Result> {
         child: FutureBuilder(
             future: getInfo(url),
             builder: (context2, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.data is SpotifyException) {
+                return Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Text(
+                      "Ops! Parece que o link que você inseriu não é um link válido do Spotify!"),
+                );
+              } else if (snapshot.hasData) {
                 return Container(
                     child: Column(
                   children: <Widget>[
@@ -114,8 +125,13 @@ class _ResultState extends State<Result> {
                   ],
                 ));
               } else {
-                return Center(
-                  child: CircularProgressIndicator(),
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 80.0,
+                    ),
+                    Center(child: CircularProgressIndicator()),
+                  ],
                 );
               }
             }));

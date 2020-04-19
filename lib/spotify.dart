@@ -26,7 +26,7 @@ Future<List> getSpotifyApi(String id) async {
         Album album = await spotify.albums.get(id);
         return [album.name, album.type, album.artists.first.name];
       } catch (e) {
-        print('error');
+        throw (e);
       }
     }
   }

@@ -139,9 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          backgroundColor: Colors.teal[600],
+          backgroundColor: Colors.blueGrey.shade500,
           title: new Text(
-            "${info[0]} - ${info[2]}",
+            "${info[0]}\n${info[2]}",
             style: TextStyle(color: Colors.white),
           ),
           content: Column(
@@ -213,6 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 snapshot.data[index].name,
                                 style: TextStyle(
                                   fontSize: 18.0,
+                                  color: Colors.teal.shade900,
+                                ),
+                              ),
+                              subtitle: Text(
+                                snapshot.data[index].name,
+                                style: TextStyle(
+                                  fontSize: 14.0,
                                   color: Colors.teal.shade900,
                                 ),
                               ),
