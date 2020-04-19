@@ -418,7 +418,7 @@ class AddPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           SizedBox(),
-          git MyCustomForm(),
+          MyCustomForm(),
         ],
       ),
     );
